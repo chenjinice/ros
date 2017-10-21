@@ -1,0 +1,31 @@
+<launch>
+	<param name="robot_description" textfile="$(find model)/robot.urdf" />   
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />  
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+<!--	<node name="slam_gmapping" pkg="my_gmapping" type="slam_gmapping" />	-->
+	<node name="wheel" pkg ="wheel" type="wheel" /> 	
+    <node name="laser" pkg="laser" type="laser" /> 
+    <node name="odom_publisher"  pkg="odom"  type="odom" />
+
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find my_move_base)/maps/mymap.yaml"/>
+	<include file="$(find my_amcl)/examples/amcl_diff.launch" />
+
+	<node pkg="my_move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<rosparam file="$(find my_move_base)/configure/costmap_common_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="$(find my_move_base)/configure/costmap_common_params.yaml" command="load" ns="local_costmap" />
+		<rosparam file="$(find my_move_base)/configure/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find my_move_base)/configure/global_costmap_params.yaml" command="load" />
+		<rosparam file="$(find my_move_base)/configure/base_local_planner_params.yaml" command="load" />
+		<rosparam file="$(find my_move_base)/configure/nav_obstacles_params.yaml" command="load" />
+	</node>
+<!--
+	<node pkg="fake_localization" type="fake_localization" name="fake_localization" /> 
+	<node pkg="anbot" type="nav_test.py" name="nav_test">  
+    	<param name="rest_time" value="1" />  
+    	<param name="fake_test" value="true" />  
+  	</node> 
+-->
+	<node name="rviz" pkg="rviz" type="rviz" />
+</launch>
+
